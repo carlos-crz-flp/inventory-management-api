@@ -4,17 +4,17 @@ using MediatR;
 namespace Inventory.Application.Features.Products.DecreaseStock
 {
     public sealed class DecreaseStockCommandHandler
-    : IRequestHandler<DecreaseStockCommand>
+        : IRequestHandler<DecreaseStockCommand>
     {
         private readonly IProductRepository _repository;
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IProductCommandRepository _commandRepository;
 
         public DecreaseStockCommandHandler(
             IProductRepository repository,
-            IUnitOfWork unitOfWork)
+            IProductCommandRepository commandRepository)
         {
             _repository = repository;
-            _unitOfWork = unitOfWork;
+            _commandRepository = commandRepository;
         }
 
         public async Task Handle(
@@ -30,9 +30,10 @@ namespace Inventory.Application.Features.Products.DecreaseStock
 
             product.DecreaseStock(request.Quantity);
 
-            _repository.Update(product);
-
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
+            await _commandRepository.SaveStockMovementAsync(
+                product,
+                product.LastMovement!,
+                cancellationToken);
         }
     }
 }

@@ -6,17 +6,14 @@ using MediatR;
 namespace Inventory.Application.Features.Products.CreateProduct
 {
     public sealed class CreateProductCommandHandler
-    : IRequestHandler<CreateProductCommand, Guid>
+        : IRequestHandler<CreateProductCommand, Guid>
     {
-        private readonly IProductRepository _repository;
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IProductCommandRepository _commandRepository;
 
         public CreateProductCommandHandler(
-            IProductRepository repository,
-            IUnitOfWork unitOfWork)
+            IProductCommandRepository commandRepository)
         {
-            _repository = repository;
-            _unitOfWork = unitOfWork;
+            _commandRepository = commandRepository;
         }
 
         public async Task<Guid> Handle(
@@ -28,9 +25,7 @@ namespace Inventory.Application.Features.Products.CreateProduct
                 ProductName.Create(request.Name),
                 request.CategoryId);
 
-            await _repository.AddAsync(product, cancellationToken);
-
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
+            await _commandRepository.AddAsync(product, cancellationToken);
 
             return product.Id;
         }

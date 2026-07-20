@@ -21,6 +21,10 @@ namespace Inventory.Domain.Aggregates.Products
 
         public IReadOnlyCollection<InventoryMovement> Movements => _movements.AsReadOnly();
 
+        public InventoryMovement? LastMovement => _movements.Count == 0
+        ? null
+        : _movements[^1];
+
         private Product()
         {
         }

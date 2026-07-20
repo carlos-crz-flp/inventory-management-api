@@ -5,17 +5,17 @@ using MediatR;
 namespace Inventory.Application.Features.Products.UpdateProduct
 {
     public sealed class UpdateProductCommandHandler
-    : IRequestHandler<UpdateProductCommand>
+        : IRequestHandler<UpdateProductCommand>
     {
         private readonly IProductRepository _repository;
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IProductCommandRepository _commandRepository;
 
         public UpdateProductCommandHandler(
             IProductRepository repository,
-            IUnitOfWork unitOfWork)
+            IProductCommandRepository commandRepository)
         {
             _repository = repository;
-            _unitOfWork = unitOfWork;
+            _commandRepository = commandRepository;
         }
 
         public async Task Handle(
@@ -32,9 +32,9 @@ namespace Inventory.Application.Features.Products.UpdateProduct
             product.Rename(ProductName.Create(request.Name));
             product.ChangeCategory(request.CategoryId);
 
-            _repository.Update(product);
-
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
+            await _commandRepository.UpdateAsync(
+                product,
+                cancellationToken);
         }
     }
 }
