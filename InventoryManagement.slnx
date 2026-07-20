@@ -1,0 +1,15 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="Inventory.Api/Inventory.Api.csproj" />
+    <Project Path="Inventory.Application/Inventory.Application.csproj" />
+    <Project Path="Inventory.Domain/Inventory.Domain.csproj" />
+    <Project Path="Inventory.Infrastructure/Inventory.Infrastructure.csproj" />
+    <Project Path="Inventory.Persistence/Inventory.Persistence.csproj" />
+    <Project Path="Inventory.SharedKernel/Inventory.SharedKernel.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="Inventory.Application.Tests/Inventory.Application.Tests.csproj" />
+    <Project Path="Inventory.Architecture.Tests/Inventory.Architecture.Tests.csproj" />
+    <Project Path="Inventory.Domain.Tests/Inventory.Domain.Tests.csproj" />
+  </Folder>
+</Solution>
