@@ -1,4 +1,5 @@
-﻿using Inventory.Application.Features.Categories.CreateCategory;
+﻿using Asp.Versioning;
+using Inventory.Application.Features.Categories.CreateCategory;
 using Inventory.Application.Features.Categories.DeleteCategory;
 using Inventory.Application.Features.Categories.GetCategories;
 using Inventory.Application.Features.Categories.GetCategoryById;
@@ -11,7 +12,8 @@ namespace Inventory.Api.Controllers
 {
     [ApiController]
     [Authorize]
-    [Route("api/[controller]")]
+    [ApiVersion("1.0")]
+    [Route("api/v{version:apiVersion}/[controller]")]
     public sealed class CategoriesController : ControllerBase
     {
         private readonly IMediator _mediator;
@@ -55,7 +57,11 @@ namespace Inventory.Api.Controllers
 
             return CreatedAtAction(
                 nameof(GetById),
-                new { id },
+                new
+                {
+                    version = HttpContext.GetRequestedApiVersion()!.ToString(),
+                    id
+                },
                 null);
         }
 

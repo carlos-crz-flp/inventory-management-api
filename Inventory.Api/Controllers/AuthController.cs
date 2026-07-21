@@ -1,4 +1,5 @@
-﻿using Inventory.Api.Contracts.Auth;
+﻿using Asp.Versioning;
+using Inventory.Api.Contracts.Auth;
 using Inventory.Application.Features.Auth.Login;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -7,7 +8,8 @@ using Microsoft.AspNetCore.Mvc;
 namespace Inventory.Api.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [ApiVersion("1.0")]
+    [Route("api/v{version:apiVersion}/[controller]")]
     public sealed class AuthController : ControllerBase
     {
         private readonly IMediator _mediator;
@@ -21,12 +23,15 @@ namespace Inventory.Api.Controllers
         [HttpPost("login")]
         [ProducesResponseType(typeof(string), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        public async Task<IActionResult> Login(LoginRequest request)
+        public async Task<IActionResult> Login(
+            LoginRequest request,
+            CancellationToken cancellationToken)
         {
             var token = await _mediator.Send(
                 new LoginCommand(
                     request.UserName,
-                    request.Password));
+                    request.Password),
+                cancellationToken);
 
             return Ok(new
             {

@@ -1,4 +1,5 @@
-﻿using Inventory.Application.Features.Products.CreateProduct;
+﻿using Asp.Versioning;
+using Inventory.Application.Features.Products.CreateProduct;
 using Inventory.Application.Features.Products.DecreaseStock;
 using Inventory.Application.Features.Products.DeleteProduct;
 using Inventory.Application.Features.Products.GetProductById;
@@ -13,7 +14,8 @@ namespace Inventory.Api.Controllers
 {
     [ApiController]
     [Authorize]
-    [Route("api/[controller]")]
+    [ApiVersion("1.0")]
+    [Route("api/v{version:apiVersion}/[controller]")]
     public sealed class ProductsController : ControllerBase
     {
         private readonly IMediator _mediator;
@@ -57,7 +59,11 @@ namespace Inventory.Api.Controllers
 
             return CreatedAtAction(
                 nameof(GetById),
-                new { id },
+                new
+                {
+                    version = HttpContext.GetRequestedApiVersion()!.ToString(),
+                    id
+                },
                 null);
         }
 

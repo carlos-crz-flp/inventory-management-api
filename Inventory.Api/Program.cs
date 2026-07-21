@@ -1,3 +1,4 @@
+using Asp.Versioning;
 using Inventory.Application;
 using Inventory.Infrastructure;
 using Inventory.Infrastructure.Persistence;
@@ -12,6 +13,20 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 
 builder.Services.AddControllers();
+
+builder.Services
+    .AddApiVersioning(options =>
+    {
+        options.DefaultApiVersion = new ApiVersion(1, 0);
+        options.AssumeDefaultVersionWhenUnspecified = true;
+        options.ReportApiVersions = true;
+    })
+    .AddMvc()
+    .AddApiExplorer(options =>
+    {
+        options.GroupNameFormat = "'v'VVV";
+        options.SubstituteApiVersionInUrl = true;
+    });
 
 var jwtSection = builder.Configuration.GetSection("Jwt");
 
@@ -88,7 +103,10 @@ using (var scope = app.Services.CreateScope())
 }
 
 app.UseSwagger();
-app.UseSwaggerUI();
+app.UseSwaggerUI(options =>
+{
+    options.SwaggerEndpoint("/swagger/v1/swagger.json", "Inventory Management API v1");
+}); 
 
 app.UseHttpsRedirection();
 
