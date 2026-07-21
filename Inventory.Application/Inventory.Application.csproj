@@ -16,7 +16,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Inventory.Domain\Inventory.Domain.csproj" />
-    <ProjectReference Include="..\Inventory.SharedKernel\Inventory.SharedKernel.csproj" />
   </ItemGroup>
 
 </Project>

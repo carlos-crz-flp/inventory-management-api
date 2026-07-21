@@ -33,8 +33,6 @@ namespace Inventory.Infrastructure
 
             services.AddScoped<IDbConnectionFactory, DbConnectionFactory>();
 
-            services.AddScoped<IUnitOfWork, UnitOfWork>();
-
             services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
 
             return services;

@@ -4,7 +4,6 @@
     <Project Path="Inventory.Application/Inventory.Application.csproj" />
     <Project Path="Inventory.Domain/Inventory.Domain.csproj" />
     <Project Path="Inventory.Infrastructure/Inventory.Infrastructure.csproj" />
-    <Project Path="Inventory.SharedKernel/Inventory.SharedKernel.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="Inventory.Application.Tests/Inventory.Application.Tests.csproj" />

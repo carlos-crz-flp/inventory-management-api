@@ -18,10 +18,18 @@
         }
 
         public Quantity Add(int amount)
-            => Create(Value + amount);
+        {
+            if (amount <= 0)
+                throw new DomainException("Quantity to add must be greater than zero.");
+
+            return Create(Value + amount);
+        }
 
         public Quantity Subtract(int amount)
         {
+            if (amount <= 0)
+                throw new DomainException("Quantity to subtract must be greater than zero.");
+
             if (amount > Value)
                 throw new DomainException("Insufficient stock.");
 

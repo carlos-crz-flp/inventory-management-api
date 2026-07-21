@@ -4,24 +4,24 @@ using MediatR;
 namespace Inventory.Application.Features.Categories.DeleteCategory
 {
     public sealed class DeleteCategoryCommandHandler
-    : IRequestHandler<DeleteCategoryCommand>
+        : IRequestHandler<DeleteCategoryCommand>
     {
-        private readonly ICategoryRepository _repository;
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly ICategoryRepository _queryRepository;
+        private readonly ICategoryCommandRepository _commandRepository;
 
         public DeleteCategoryCommandHandler(
-            ICategoryRepository repository,
-            IUnitOfWork unitOfWork)
+            ICategoryRepository queryRepository,
+            ICategoryCommandRepository commandRepository)
         {
-            _repository = repository;
-            _unitOfWork = unitOfWork;
+            _queryRepository = queryRepository;
+            _commandRepository = commandRepository;
         }
 
         public async Task Handle(
             DeleteCategoryCommand request,
             CancellationToken cancellationToken)
         {
-            var category = await _repository.GetByIdAsync(
+            var category = await _queryRepository.GetByIdAsync(
                 request.Id,
                 cancellationToken);
 
@@ -30,9 +30,9 @@ namespace Inventory.Application.Features.Categories.DeleteCategory
 
             category.Deactivate();
 
-            _repository.Update(category);
-
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
+            await _commandRepository.UpdateAsync(
+                category,
+                cancellationToken);
         }
     }
 }

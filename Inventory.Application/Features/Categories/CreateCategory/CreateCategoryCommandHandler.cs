@@ -6,17 +6,14 @@ using MediatR;
 namespace Inventory.Application.Features.Categories.CreateCategory
 {
     public sealed class CreateCategoryCommandHandler
-    : IRequestHandler<CreateCategoryCommand, Guid>
+        : IRequestHandler<CreateCategoryCommand, Guid>
     {
-        private readonly ICategoryRepository _repository;
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly ICategoryCommandRepository _commandRepository;
 
         public CreateCategoryCommandHandler(
-            ICategoryRepository repository,
-            IUnitOfWork unitOfWork)
+            ICategoryCommandRepository commandRepository)
         {
-            _repository = repository;
-            _unitOfWork = unitOfWork;
+            _commandRepository = commandRepository;
         }
 
         public async Task<Guid> Handle(
@@ -26,9 +23,9 @@ namespace Inventory.Application.Features.Categories.CreateCategory
             var category = new Category(
                 CategoryName.Create(request.Name));
 
-            await _repository.AddAsync(category, cancellationToken);
-
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
+            await _commandRepository.AddAsync(
+                category,
+                cancellationToken);
 
             return category.Id;
         }

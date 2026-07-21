@@ -4,24 +4,24 @@ using MediatR;
 namespace Inventory.Application.Features.Products.DeleteProduct
 {
     public sealed class DeleteProductCommandHandler
-    : IRequestHandler<DeleteProductCommand>
+        : IRequestHandler<DeleteProductCommand>
     {
-        private readonly IProductRepository _repository;
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly IProductRepository _queryRepository;
+        private readonly IProductCommandRepository _commandRepository;
 
         public DeleteProductCommandHandler(
-            IProductRepository repository,
-            IUnitOfWork unitOfWork)
+            IProductRepository queryRepository,
+            IProductCommandRepository commandRepository)
         {
-            _repository = repository;
-            _unitOfWork = unitOfWork;
+            _queryRepository = queryRepository;
+            _commandRepository = commandRepository;
         }
 
         public async Task Handle(
             DeleteProductCommand request,
             CancellationToken cancellationToken)
         {
-            var product = await _repository.GetByIdAsync(
+            var product = await _queryRepository.GetByIdAsync(
                 request.Id,
                 cancellationToken);
 
@@ -30,9 +30,9 @@ namespace Inventory.Application.Features.Products.DeleteProduct
 
             product.Deactivate();
 
-            _repository.Update(product);
-
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
+            await _commandRepository.UpdateAsync(
+                product,
+                cancellationToken);
         }
     }
 }

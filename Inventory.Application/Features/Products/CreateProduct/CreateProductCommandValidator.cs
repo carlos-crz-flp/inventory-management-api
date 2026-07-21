@@ -13,7 +13,7 @@ namespace Inventory.Application.Features.Products.CreateProduct
 
             RuleFor(x => x.Name)
                 .NotEmpty()
-                .MaximumLength(200);
+                .MaximumLength(150);
 
             RuleFor(x => x.CategoryId)
                 .NotEmpty();

@@ -5,35 +5,36 @@ using MediatR;
 namespace Inventory.Application.Features.Categories.UpdateCategory
 {
     public sealed class UpdateCategoryCommandHandler
-    : IRequestHandler<UpdateCategoryCommand>
+        : IRequestHandler<UpdateCategoryCommand>
     {
-        private readonly ICategoryRepository _repository;
-        private readonly IUnitOfWork _unitOfWork;
+        private readonly ICategoryRepository _queryRepository;
+        private readonly ICategoryCommandRepository _commandRepository;
 
         public UpdateCategoryCommandHandler(
-            ICategoryRepository repository,
-            IUnitOfWork unitOfWork)
+            ICategoryRepository queryRepository,
+            ICategoryCommandRepository commandRepository)
         {
-            _repository = repository;
-            _unitOfWork = unitOfWork;
+            _queryRepository = queryRepository;
+            _commandRepository = commandRepository;
         }
 
         public async Task Handle(
             UpdateCategoryCommand request,
             CancellationToken cancellationToken)
         {
-            var category = await _repository.GetByIdAsync(
+            var category = await _queryRepository.GetByIdAsync(
                 request.Id,
                 cancellationToken);
 
             if (category is null)
                 throw new KeyNotFoundException("Category not found.");
 
-            category.Rename(CategoryName.Create(request.Name));
+            category.Rename(
+                CategoryName.Create(request.Name));
 
-            _repository.Update(category);
-
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
+            await _commandRepository.UpdateAsync(
+                category,
+                cancellationToken);
         }
     }
 }
