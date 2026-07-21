@@ -50,13 +50,13 @@ Entity Framework Core is used for database access and migrations, while Dapper i
 ## Project Structure
 
 ```
-InventoryManagementApi/
+InventoryManagement/
 │
-├── Inventory.Api              # Presentation layer
-├── Inventory.Application      # Application layer (CQRS, DTOs, Interfaces)
-├── Inventory.Domain           # Domain entities and business rules
-├── Inventory.Infrastructure   # Persistence, Authentication and Services
-├── Inventory.SharedKernel     # Shared abstractions and common components
+├── Inventory.Api
+├── Inventory.Application
+├── Inventory.Domain
+├── Inventory.Infrastructure
+├── Inventory.SharedKernel
 │
 ├── docker-compose.yml
 ├── Dockerfile
