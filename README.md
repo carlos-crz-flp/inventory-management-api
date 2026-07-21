@@ -1,62 +1,122 @@
 # Inventory Management API
 
-A RESTful Inventory Management API built with **.NET 8** following **Clean Architecture** and the **CQRS** pattern.
+A RESTful Inventory Management API built with **.NET 8** following **Clean Architecture** and the **CQRS (Command Query Responsibility Segregation)** pattern.
 
-The application provides authenticated endpoints to manage product categories, products, and inventory movements while maintaining stock consistency through business rules. It demonstrates modern backend development practices with a focus on maintainability, scalability, and separation of concerns.
+The application provides authenticated endpoints to manage categories, products, inventory movements and stock levels while enforcing business rules through a rich domain model.
+
+This project was developed as part of a senior backend technical assessment, emphasizing maintainability, scalability, testability and software design best practices.
 
 ---
 
-## Features
+# Features
 
 - JWT Bearer Authentication
-- Category Management
-- Product Management
+- Category Management (CRUD)
+- Product Management (CRUD)
 - Inventory Entry Registration
 - Inventory Exit Registration
 - Inventory Movement History
-- Automatic Database Migrations
+- Automatic Entity Framework Migrations
 - Swagger / OpenAPI Documentation
 - Docker Support
 - Clean Architecture
 - CQRS with MediatR
-- Entity Framework Core and Dapper integration
+- FluentValidation
+- Entity Framework Core (Read Operations)
+- Dapper (Write Operations)
+- Unit Tests
+- Architecture Tests
 
 ---
 
-## Architecture
+# Architecture
 
-The solution follows the principles of **Clean Architecture**, separating responsibilities into independent layers.
+The solution follows the principles of **Clean Architecture**, keeping business logic isolated from infrastructure concerns.
 
-The application implements the **CQRS (Command Query Responsibility Segregation)** pattern using MediatR, separating read and write operations while keeping business logic isolated from infrastructure concerns.
+The application implements the **CQRS** pattern using **MediatR**, separating read and write operations into independent use cases.
 
-Entity Framework Core is used for database access and migrations, while Dapper is used for lightweight SQL operations. Authentication is implemented using JWT Bearer Tokens.
+To satisfy the assessment requirements:
+
+- **Entity Framework Core** is used for read operations and database migrations.
+- **Dapper** is used for write operations.
+- Business rules are implemented inside the Domain layer.
+- Validation is handled through FluentValidation.
+- Dependency Injection is used throughout the solution.
 
 ---
 
-## Technology Stack
+# Architecture Overview
+
+```
+                +-------------------+
+                |     HTTP Client   |
+                +---------+---------+
+                          |
+                          v
+                +-------------------+
+                |   Inventory.Api   |
+                +---------+---------+
+                          |
+                          v
+                +-------------------+
+                | Inventory.Application |
+                | Commands / Queries |
+                +---------+---------+
+                          |
+                          v
+                +-------------------+
+                | Inventory.Domain  |
+                | Business Rules    |
+                +---------+---------+
+                          |
+                          v
+                +-------------------+
+                | Infrastructure    |
+                | EF Core / Dapper  |
+                +---------+---------+
+                          |
+                          v
+                +-------------------+
+                |   SQL Server      |
+                +-------------------+
+```
+
+---
+
+# Technology Stack
 
 - .NET 8
 - ASP.NET Core Web API
 - Entity Framework Core
 - Dapper
 - MediatR
+- FluentValidation
 - SQL Server
 - JWT Bearer Authentication
 - Docker
 - Swagger / OpenAPI
+- xUnit
+- Moq
+- FluentAssertions
+- NetArchTest
 
 ---
 
-## Project Structure
+# Project Structure
 
 ```
-InventoryManagement/
+InventoryManagement
 │
-├── Inventory.Api
-├── Inventory.Application
-├── Inventory.Domain
-├── Inventory.Infrastructure
-├── Inventory.SharedKernel
+├── src
+│   ├── Inventory.Api
+│   ├── Inventory.Application
+│   ├── Inventory.Domain
+│   └── Inventory.Infrastructure
+│
+├── tests
+│   ├── Inventory.Application.Tests
+│   ├── Inventory.Domain.Tests
+│   └── Inventory.Architecture.Tests
 │
 ├── docker-compose.yml
 ├── Dockerfile
@@ -64,23 +124,37 @@ InventoryManagement/
 └── wait-for-it.sh
 ```
 
-### Project Responsibilities
+---
+
+# Project Responsibilities
 
 | Project | Responsibility |
 |----------|----------------|
-| Inventory.Api | API endpoints, dependency injection and middleware configuration |
-| Inventory.Application | Use cases, Commands, Queries, Validators and Interfaces |
-| Inventory.Domain | Business entities, domain rules and contracts |
-| Inventory.Infrastructure | Database access, repositories, authentication and external services |
-| Inventory.SharedKernel | Shared abstractions and common components |
+| Inventory.Api | REST API, Middleware, Authentication, Dependency Injection |
+| Inventory.Application | CQRS, Commands, Queries, Validators and Use Cases |
+| Inventory.Domain | Entities, Value Objects and Business Rules |
+| Inventory.Infrastructure | EF Core, Dapper, Authentication and Persistence |
 
 ---
 
-## Getting Started
+# Business Rules
 
-### Prerequisites
+The domain layer enforces the following business rules:
 
-Before running the application, ensure you have installed:
+- Products cannot have negative stock.
+- Every inventory movement generates a movement record.
+- Product stock is always updated through domain methods.
+- Categories are soft deleted.
+- Products are soft deleted.
+- Domain entities protect their own invariants.
+
+---
+
+# Getting Started
+
+## Prerequisites
+
+Before running the application, install:
 
 - .NET 8 SDK
 - Docker Desktop
@@ -88,7 +162,7 @@ Before running the application, ensure you have installed:
 
 ---
 
-### Clone the repository
+## Clone the repository
 
 ```bash
 git clone https://github.com/carlos-crz-flp/inventory-management-api.git
@@ -98,23 +172,21 @@ cd inventory-management-api
 
 ---
 
-### Run with Docker
+## Run with Docker
 
-Build and start the containers:
+Build and start all services:
 
 ```bash
 docker compose up --build
 ```
 
-The application will automatically:
+The application automatically:
 
-- Start SQL Server
-- Wait until SQL Server is available
-- Apply pending Entity Framework migrations
-- Create the database if it does not exist
-- Start the Web API
-
-Once running:
+- Starts SQL Server
+- Waits until SQL Server becomes available
+- Applies pending Entity Framework migrations
+- Creates the database if necessary
+- Starts the Web API
 
 API
 
@@ -128,11 +200,23 @@ Swagger
 http://localhost:8080/swagger
 ```
 
+Stop containers:
+
+```bash
+docker compose down
+```
+
+View logs:
+
+```bash
+docker compose logs -f
+```
+
 ---
 
-### Run locally
+## Run Locally
 
-Update the SQL Server connection string in:
+Update the SQL Server connection string located in:
 
 ```
 Inventory.Api/appsettings.json
@@ -154,29 +238,24 @@ dotnet run --project Inventory.Api
 
 ---
 
-## Configuration
+# Configuration
 
-The application uses the following configuration sections:
+Application configuration is provided through:
 
-```json
-ConnectionStrings
+- ConnectionStrings
+- Jwt
 
-Jwt
-```
-
-The default configuration is located in:
-
-```
-Inventory.Api/appsettings.json
-```
+For production environments these values should be supplied through environment variables.
 
 ---
 
-## Authentication
+# Authentication
 
-Authentication is based on **JWT Bearer Tokens**.
+Authentication is implemented using **JWT Bearer Tokens**.
 
-Obtain a token using the authentication endpoint and include it in subsequent requests:
+A lightweight authentication flow was implemented for this technical assessment, issuing JWT tokens directly from the API instead of integrating an external OAuth2 Authorization Server.
+
+After authentication include the token in every request:
 
 ```
 Authorization: Bearer {your_token}
@@ -184,11 +263,9 @@ Authorization: Bearer {your_token}
 
 ---
 
-## API Documentation
+# API Documentation
 
 Swagger is enabled by default.
-
-Once the application is running, access:
 
 ```
 http://localhost:8080/swagger
@@ -198,39 +275,66 @@ Swagger allows testing every endpoint directly from the browser.
 
 ---
 
-## Design Decisions
+# Testing
 
-Some of the architectural decisions made during development include:
+The solution includes different types of automated tests:
 
-- Clean Architecture to enforce separation of concerns.
-- CQRS using MediatR for clear command/query separation.
-- Dependency Injection throughout the application.
-- Repository Pattern to abstract persistence.
-- Unit of Work to coordinate transactional operations.
-- Entity Framework Core for persistence and database migrations.
-- Dapper for lightweight SQL execution.
-- JWT Bearer Authentication for stateless security.
-- Docker Compose for simplified local development.
+- Domain Unit Tests
+- Application Unit Tests
+- FluentValidation Tests
+- Architecture Tests
+
+Architecture tests verify:
+
+- Layer dependencies
+- CQRS conventions
+- Validators
+- Handlers
+- Naming conventions
+
+Run all tests:
+
+```bash
+dotnet test
+```
 
 ---
 
-## Future Improvements
+# Design Decisions
 
-Possible enhancements include:
+Some of the most important architectural decisions include:
 
-- Unit and Integration Testing
-- Refresh Token implementation
+- Clean Architecture
+- CQRS using MediatR
+- SOLID Principles
+- Repository Pattern
+- FluentValidation
+- Dependency Injection
+- Entity Framework Core for read operations
+- Dapper for write operations
+- JWT Bearer Authentication
+- Docker Compose for local development
+- Architecture Tests using NetArchTest and Reflection
+
+---
+
+# Future Improvements
+
+Possible future enhancements include:
+
+- Refresh Token support
 - Role-Based Authorization
-- Global Exception Handling with Problem Details
-- Logging with Serilog
+- Global Exception Handling using ProblemDetails
+- Structured Logging with Serilog
 - Health Checks
-- CI/CD pipeline
 - API Versioning
 - Rate Limiting
-- Caching
+- Distributed Caching
+- CI/CD Pipeline
+- Integration Tests
 
 ---
 
-## License
+# License
 
-This project is provided for educational and demonstration purposes.
+This project was created for educational purposes and as part of a technical assessment.
