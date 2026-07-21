@@ -4,11 +4,13 @@ using Inventory.Application.Features.Categories.GetCategories;
 using Inventory.Application.Features.Categories.GetCategoryById;
 using Inventory.Application.Features.Categories.UpdateCategory;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Inventory.Api.Controllers
 {
     [ApiController]
+    [Authorize]
     [Route("api/[controller]")]
     public sealed class CategoriesController : ControllerBase
     {

@@ -1,4 +1,6 @@
-﻿using Inventory.Application.Abstractions.Persistence;
+﻿using Inventory.Application.Abstractions.Authentication;
+using Inventory.Application.Abstractions.Persistence;
+using Inventory.Infrastructure.Authentication;
 using Inventory.Infrastructure.Persistence;
 using Inventory.Infrastructure.Persistence.Dapper;
 using Inventory.Infrastructure.Persistence.Repositories;
@@ -14,6 +16,11 @@ namespace Inventory.Infrastructure
             this IServiceCollection services,
             IConfiguration configuration)
         {
+            services.Configure<JwtOptions>(
+                configuration.GetSection(JwtOptions.SectionName));
+
+            services.AddSingleton<IJwtConfiguration, JwtConfiguration>();
+
             services.AddDbContext<InventoryDbContext>(options =>
                 options.UseSqlServer(
                     configuration.GetConnectionString("DefaultConnection")));
@@ -27,6 +34,8 @@ namespace Inventory.Infrastructure
             services.AddScoped<IDbConnectionFactory, DbConnectionFactory>();
 
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+
+            services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
 
             return services;
         }

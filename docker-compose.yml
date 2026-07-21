@@ -1,34 +1,51 @@
-version: '3.9'
+version: "3.9"
 
 services:
 
   sqlserver:
     image: mcr.microsoft.com/mssql/server:2022-latest
     container_name: inventory-sqlserver
+
     environment:
       ACCEPT_EULA: "Y"
-      SA_PASSWORD: "Your_password123"
+      MSSQL_PID: "Developer"
+      SA_PASSWORD: "YourStrong@Passw0rd"
+
     ports:
       - "1433:1433"
-    volumes:
-      - sql_data:/var/opt/mssql
 
-  inventory.api:
+    volumes:
+      - sqlserver-data:/var/opt/mssql
+
+    restart: unless-stopped
+
+  inventory-api:
     build:
       context: .
-      dockerfile: Inventory.Api/Dockerfile
+      dockerfile: Dockerfile
 
     container_name: inventory-api
 
     depends_on:
       - sqlserver
 
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Development"
+
+      ASPNETCORE_URLS: http://+:8080
+
+      ConnectionStrings__DefaultConnection: >
+        Server=sqlserver;
+        Database=InventoryDb;
+        User Id=sa;
+        Password=YourStrong@Passw0rd;
+        TrustServerCertificate=True;
+        Encrypt=False;
+
     ports:
       - "8080:8080"
 
-    environment:
-      ASPNETCORE_URLS: http://+:8080
-      ConnectionStrings__DefaultConnection: "Server=sqlserver;Database=InventoryDb;User Id=sa;Password=Your_password123;TrustServerCertificate=True"
+    restart: unless-stopped
 
 volumes:
-  sql_data:
+  sqlserver-data:

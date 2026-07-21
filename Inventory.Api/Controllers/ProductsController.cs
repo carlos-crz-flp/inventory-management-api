@@ -6,11 +6,13 @@ using Inventory.Application.Features.Products.GetProducts;
 using Inventory.Application.Features.Products.IncreaseStock;
 using Inventory.Application.Features.Products.UpdateProduct;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Inventory.Api.Controllers
 {
     [ApiController]
+    [Authorize]
     [Route("api/[controller]")]
     public sealed class ProductsController : ControllerBase
     {
